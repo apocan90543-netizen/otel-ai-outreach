@@ -23,11 +23,16 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 CURRENT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = CURRENT_DIR.parents[2]
+PROJECT_ROOT = CURRENT_DIR.parents[2] if len(CURRENT_DIR.parents) >= 3 else CURRENT_DIR
 CSV_FILE = CURRENT_DIR / "oteller_lead_listesi.csv"
 
 # Merkezi Google Auth modülünü yükle
-sys.path.insert(0, str(PROJECT_ROOT / "_knowledge" / "credentials" / "oauth"))
+oauth_dir = PROJECT_ROOT / "_knowledge" / "credentials" / "oauth"
+if oauth_dir.exists():
+    sys.path.insert(0, str(oauth_dir))
+else:
+    sys.path.insert(0, str(CURRENT_DIR))
+
 from google_auth import get_gmail_service
 from email_generator import generate_hotel_email
 
