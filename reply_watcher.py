@@ -21,14 +21,19 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 CURRENT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = CURRENT_DIR.parents[2]
+PROJECT_ROOT = CURRENT_DIR.parents[2] if len(CURRENT_DIR.parents) >= 3 else CURRENT_DIR
 MASTER_ENV = PROJECT_ROOT / "_knowledge" / "credentials" / "master.env"
 
 if MASTER_ENV.exists():
     load_dotenv(MASTER_ENV)
 
 # Merkezi Google Auth modülü
-sys.path.insert(0, str(PROJECT_ROOT / "_knowledge" / "credentials" / "oauth"))
+oauth_dir = PROJECT_ROOT / "_knowledge" / "credentials" / "oauth"
+if oauth_dir.exists():
+    sys.path.insert(0, str(oauth_dir))
+else:
+    sys.path.insert(0, str(CURRENT_DIR))
+
 from google_auth import get_gmail_service
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
